@@ -1,9 +1,9 @@
-import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:note_app/consatants.dart';
 import 'package:note_app/model/noteData.dart';
-import 'package:note_app/screens/detail_screen.dart';
+
+import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -42,29 +42,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
-                    child: OpenContainer(
-                      closedBuilder: (context, action) {
-                        return Padding(
+                  return Hero(
+                    tag: "hero_tag${noteList[index].noteId}",
+                    flightShuttleBuilder: (BuildContext flightContext,
+                        Animation<double> animation,
+                        HeroFlightDirection flightDirection,
+                        BuildContext fromHeroContext,
+                        BuildContext toHeroContext) {
+                      return DefaultTextStyle(
+                        style: DefaultTextStyle.of(toHeroContext).style,
+                        child: toHeroContext.widget,
+                      );
+                    },
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailScreen(
+                                        title: noteList[index].title,
+                                        note: noteList[index].note,
+                                        id: noteList[index].noteId,
+                                      )));
+                        },
+                        child: Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 15.0, vertical: 10.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0),
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 0.5,
+                              )),
                           child: Text(noteList[index].title,
                               style: kTitleTextStyle),
-                        );
-                      },
-                      openBuilder: (context, action) {
-                        return DetailScreen(
-                          title: noteList[index].title,
-                          note: noteList[index].note,
-                          id: noteList[index].noteId,
-                        );
-                      },
-                      transitionDuration: Duration(milliseconds: 500),
-                      closedShape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          side: BorderSide(color: Colors.grey[300])),
+                        ),
+                      ),
                     ),
                   );
                 },

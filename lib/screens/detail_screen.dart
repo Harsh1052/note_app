@@ -50,10 +50,13 @@ class _DetailScreenState extends State<DetailScreen> {
                             id: widget.id)));
               })
         ],
-        title: Text(
-          widget.title,
-          style: TextStyle(
-              color: Colors.red, fontSize: 25.0, fontWeight: FontWeight.w600),
+        title: Hero(
+          tag: "hero_tag${widget.id}",
+          child: Text(
+            widget.title,
+            style: TextStyle(
+                color: Colors.red, fontSize: 25.0, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       body: ModalProgressHUD(
@@ -63,14 +66,9 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Padding(
               padding: EdgeInsets.only(right: 10.0, left: 10.0),
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SelectableText(
-                      widget.note,
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ],
+                child: SelectableText(
+                  widget.note,
+                  style: TextStyle(fontSize: 18.0),
                 ),
               ),
             ),
