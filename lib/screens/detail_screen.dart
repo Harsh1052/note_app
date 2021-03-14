@@ -11,14 +11,14 @@ class DetailScreen extends StatefulWidget {
   final String note;
   final String id;
 
-  DetailScreen({@required this.title, @required this.note, this.id});
+  DetailScreen({@required this.title, @required this.note, @required this.id});
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  final _noteFirebase = NoteFirebase();
+  final _noteFirebase = FirebaseCRUD();
   bool loading = false;
 
   @override

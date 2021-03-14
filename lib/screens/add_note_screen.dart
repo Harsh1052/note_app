@@ -9,7 +9,7 @@ class AddNewTaskScreen extends StatefulWidget {
   final String note;
   final String id;
 
-  AddNewTaskScreen({this.note, this.title, this.id});
+  AddNewTaskScreen({this.note = "", this.title = "", this.id = ""});
 
   @override
   _AddNewTaskScreenState createState() => _AddNewTaskScreenState();
@@ -20,7 +20,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
 
   final _noteController = TextEditingController();
 
-  final NoteFirebase _noteFirebase = NoteFirebase();
+  final FirebaseCRUD _noteFirebase = FirebaseCRUD();
 
   bool loading = false;
 
@@ -57,9 +57,9 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     loading = true;
                   });
 
-                  if (widget.note == null &&
-                      widget.title == null &&
-                      widget.id == null) {
+                  if (widget.note == "" &&
+                      widget.title == "" &&
+                      widget.id == "") {
                     await _noteFirebase.addNote(
                         _titleController.text, _noteController.text, context);
                     Navigator.pushReplacement(

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class NoteFirebase {
+class FirebaseCRUD {
   final _noteFireStore =
       FirebaseFirestore.instance.collection("notesCollection");
   final _trashNoteFireStore =

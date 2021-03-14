@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:note_app/consatants.dart';
@@ -15,7 +16,7 @@ class _TrashTaskScreenState extends State<TrashTaskScreen> {
       FirebaseFirestore.instance.collection("trashNoteCollection");
   bool loading = false;
 
-  final _noteFirebase = NoteFirebase();
+  final _noteFirebase = FirebaseCRUD();
 
   @override
   Widget build(BuildContext context) {
@@ -43,71 +44,86 @@ class _TrashTaskScreenState extends State<TrashTaskScreen> {
                   child: Text("No Note Added in Trash"),
                 );
               }
-              return ListView.builder(
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                    child: Card(
-                      elevation: 3.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          side: BorderSide(
-                            color: Colors.grey,
-                            width: 0.5,
-                          )),
-                      child: ListTile(
-                        title: Text(noteTrash[index].title,
-                            style: kTitleTextStyle),
-                        trailing: IconButton(
-                            icon: Icon(
-                              Icons.restore,
-                              color: Colors.red,
-                            ),
-                            onPressed: () async {
-                              setState(() {
-                                loading = true;
-                              });
-                              await _noteFirebase.restore(
-                                  noteTrash[index].title,
-                                  noteTrash[index].note,
-                                  noteTrash[index].noteId,
-                                  context);
-                              setState(() {
-                                loading = false;
-                              });
-                            }),
-                        onLongPress: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text("Are You Sure?"),
-                                  content: Text(
-                                      "This Note Will Be Permanently Delete"),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text("Cancel")),
-                                    TextButton(
-                                        onPressed: () async {
-                                          await _noteFirebase.deleteInTrash(
-                                              noteTrash[index].noteId, context);
-
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text("Ok"))
-                                  ],
-                                );
-                              });
-                        },
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    title: Text(
+                      "Trash Notes",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 20.0,
                       ),
                     ),
-                  );
-                },
-                itemCount: noteTrash.length,
+                    centerTitle: true,
+                    backgroundColor: Colors.white,
+                    elevation: 0.0,
+                  ),
+                  SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                      child: Card(
+                        elevation: 3.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                            side: BorderSide(
+                              color: Colors.grey,
+                              width: 0.5,
+                            )),
+                        child: ListTile(
+                          title: Text(noteTrash[index].title,
+                              style: kTitleTextStyle),
+                          trailing: IconButton(
+                              icon: Icon(
+                                Icons.restore,
+                                color: Colors.red,
+                              ),
+                              onPressed: () async {
+                                setState(() {
+                                  loading = true;
+                                });
+                                await _noteFirebase.restore(
+                                    noteTrash[index].title,
+                                    noteTrash[index].note,
+                                    noteTrash[index].noteId,
+                                    context);
+                                setState(() {
+                                  loading = false;
+                                });
+                              }),
+                          onLongPress: () async {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text("Are You Sure?"),
+                                    content: Text(
+                                        "This Note Will Be Permanently Delete"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("Cancel")),
+                                      TextButton(
+                                          onPressed: () async {
+                                            await _noteFirebase.deleteInTrash(
+                                                noteTrash[index].noteId,
+                                                context);
+
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("Ok"))
+                                    ],
+                                  );
+                                });
+                          },
+                        ),
+                      ),
+                    );
+                  }, childCount: noteTrash.length))
+                ],
               );
             }
           },
