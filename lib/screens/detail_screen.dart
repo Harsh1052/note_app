@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:note_app/bloc/bloc_task.dart';
 import 'package:note_app/consatants.dart';
-import 'package:note_app/model/firebase_events.dart';
 import 'package:note_app/screens/add_note_screen.dart';
 
 import 'bottom_app_bar_screen.dart';
@@ -18,7 +19,6 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  final _noteFirebase = FirebaseCRUD();
   bool loading = false;
 
   @override
@@ -79,74 +79,89 @@ class _DetailScreenState extends State<DetailScreen> {
         elevation: 0.0,
         child: Container(
           width: MediaQuery.of(context).size.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                  style: kButtonStyle.copyWith(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.yellow[900]),
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      loading = true;
-                    });
-                    await _noteFirebase.moveToTrash(
-                        widget.title, widget.note, widget.id, context);
+          child: BlocBuilder<NoteBloc, NoteState>(builder: (context, state) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    style: kButtonStyle.copyWith(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.yellow[900]),
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        loading = true;
+                      });
 
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BottomNayBar()));
-                  },
-                  child: Row(
-                    children: [Text("Move to Trash"), Icon(Icons.delete)],
-                  )),
-              ElevatedButton(
-                  style: kButtonStyle,
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Are You Sure?"),
-                            content:
-                                Text("This Note Will Be Permanently Delete"),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text("Cancel")),
-                              TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      loading = true;
-                                    });
-                                    _noteFirebase.delete(widget.id, context);
+                      BlocProvider.of<NoteBloc>(context, listen: false).add(
+                          MoveToTrash(
+                              title: widget.title,
+                              note: widget.note,
+                              id: widget.id));
 
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                BottomNayBar()));
-                                  },
-                                  child: Text("Ok"))
-                            ],
-                          );
-                        });
-                  },
-                  child: Row(
-                    children: [
-                      Text("Delete Forever"),
-                      Icon(
-                        Icons.delete_forever,
-                        semanticLabel: "Permanently Delete",
-                      )
-                    ],
-                  ))
-            ],
-          ),
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Moved to Trash Successfully")));
+
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BottomNayBar()));
+                    },
+                    child: Row(
+                      children: [Text("Move to Trash"), Icon(Icons.delete)],
+                    )),
+                ElevatedButton(
+                    style: kButtonStyle,
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("Are You Sure?"),
+                              content:
+                                  Text("This Note Will Be Permanently Delete"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Cancel")),
+                                TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        loading = true;
+                                      });
+                                      BlocProvider.of<NoteBloc>(context,
+                                              listen: false)
+                                          .add(DeleteNote(id: widget.id));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "Deleted Successfully")));
+
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BottomNayBar()));
+                                    },
+                                    child: Text("Ok"))
+                              ],
+                            );
+                          });
+                    },
+                    child: Row(
+                      children: [
+                        Text("Delete Forever"),
+                        Icon(
+                          Icons.delete_forever,
+                          semanticLabel: "Permanently Delete",
+                        )
+                      ],
+                    )),
+              ],
+            );
+          }),
         ),
       ),
     );

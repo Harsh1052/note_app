@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:note_app/bloc/bloc_task.dart';
 import 'package:note_app/consatants.dart';
-import 'package:note_app/model/firebase_events.dart';
 import 'package:note_app/model/noteData.dart';
 
 class TrashTaskScreen extends StatefulWidget {
@@ -15,8 +16,6 @@ class _TrashTaskScreenState extends State<TrashTaskScreen> {
   final _trashNoteFireStore =
       FirebaseFirestore.instance.collection("trashNoteCollection");
   bool loading = false;
-
-  final _noteFirebase = FirebaseCRUD();
 
   @override
   Widget build(BuildContext context) {
@@ -71,55 +70,70 @@ class _TrashTaskScreenState extends State<TrashTaskScreen> {
                               color: Colors.grey,
                               width: 0.5,
                             )),
-                        child: ListTile(
-                          title: Text(noteTrash[index].title,
-                              style: kTitleTextStyle),
-                          trailing: IconButton(
-                              icon: Icon(
-                                Icons.restore,
-                                color: Colors.red,
-                              ),
-                              onPressed: () async {
-                                setState(() {
-                                  loading = true;
-                                });
-                                await _noteFirebase.restore(
-                                    noteTrash[index].title,
-                                    noteTrash[index].note,
-                                    noteTrash[index].noteId,
-                                    context);
-                                setState(() {
-                                  loading = false;
-                                });
-                              }),
-                          onLongPress: () async {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text("Are You Sure?"),
-                                    content: Text(
-                                        "This Note Will Be Permanently Delete"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("Cancel")),
-                                      TextButton(
-                                          onPressed: () async {
-                                            await _noteFirebase.deleteInTrash(
-                                                noteTrash[index].noteId,
-                                                context);
+                        child: BlocBuilder<NoteBloc, NoteState>(
+                            builder: (context, state) {
+                          return ListTile(
+                            title: Text(noteTrash[index].title,
+                                style: kTitleTextStyle),
+                            trailing: IconButton(
+                                icon: Icon(
+                                  Icons.restore,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () async {
+                                  setState(() {
+                                    loading = true;
+                                  });
 
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("Ok"))
-                                    ],
-                                  );
-                                });
-                          },
-                        ),
+                                  BlocProvider.of<NoteBloc>(context,
+                                          listen: false)
+                                      .add(Restore(
+                                          title: noteTrash[index].title,
+                                          note: noteTrash[index].note,
+                                          id: noteTrash[index].noteId));
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text("Restored Successfully")));
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                }),
+                            onLongPress: () async {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text("Are You Sure?"),
+                                      content: Text(
+                                          "This Note Will Be Permanently Delete"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Cancel")),
+                                        TextButton(
+                                            onPressed: () async {
+                                              BlocProvider.of<NoteBloc>(context,
+                                                      listen: false)
+                                                  .add(DeleteInTrash(
+                                                      id: noteTrash[index]
+                                                          .noteId));
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          "Deleted Successfully")));
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Ok"))
+                                      ],
+                                    );
+                                  });
+                            },
+                          );
+                        }),
                       ),
                     );
                   }, childCount: noteTrash.length))
