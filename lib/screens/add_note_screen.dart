@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:note_app/bloc/bloc_task.dart';
 
 import 'bottom_app_bar_screen.dart';
 
-class AddNewTaskScreen extends StatefulWidget {
+class AddNewTaskScreen extends StatelessWidget {
   final String title;
   final String note;
   final String id;
 
   AddNewTaskScreen({this.note = "", this.title = "", this.id = ""});
 
-  @override
-  _AddNewTaskScreenState createState() => _AddNewTaskScreenState();
-}
-
-class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   final _titleController = TextEditingController();
 
   final _noteController = TextEditingController();
-
-  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +45,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     color: Colors.red,
                   ),
                   onPressed: () async {
-                    setState(() {
-                      loading = true;
-                    });
-
-                    if (widget.note == "" &&
-                        widget.title == "" &&
-                        widget.id == "") {
+                    if (note == "" && title == "" && id == "") {
                       BlocProvider.of<NoteBloc>(context, listen: false).add(
                           AddNote(
                               title: _titleController.text,
@@ -76,7 +62,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           EditNote(
                               title: _titleController.text,
                               note: _noteController.text,
-                              id: widget.id));
+                              id: id));
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Edited Successfully")));
                       Navigator.pushReplacement(
@@ -84,71 +70,65 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           MaterialPageRoute(
                               builder: (context) => BottomNayBar()));
                     }
-                    setState(() {
-                      loading = false;
-                    });
                   },
                 ));
           })
         ],
       ),
-      body: ModalProgressHUD(
-        inAsyncCall: loading,
-        child: Stack(children: [
-          SingleChildScrollView(
-              child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextFormField(
-                  controller: _titleController..text = widget.title,
-                  textInputAction: TextInputAction.newline,
-                  autofocus: true,
-                  style: TextStyle(
-                    fontSize: 30.0,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: "Title",
-                    hintStyle: TextStyle(color: Colors.red[300]),
-                    border: InputBorder.none,
-                  ),
-                  cursorHeight: 30.0,
+      body: Stack(children: [
+        SingleChildScrollView(
+            child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextFormField(
+                controller: _titleController..text = title,
+                textInputAction: TextInputAction.newline,
+                autofocus: true,
+                style: TextStyle(
+                  fontSize: 30.0,
                 ),
-              ),
-              SizedBox(
-                height: 2.0,
-              ),
-              Divider(
-                thickness: 0.3,
-                color: Colors.red[200],
-              ),
-              SizedBox(
-                height: 2.0,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextFormField(
-                  controller: _noteController..text = widget.note,
-                  textInputAction: TextInputAction.newline,
-                  autofocus: true,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                  ),
-                  scrollPadding: EdgeInsets.all(20.0),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: 99999,
-                  decoration: InputDecoration(
-                    hintText: "Note",
-                    hintStyle: TextStyle(color: Colors.red[300]),
-                    border: InputBorder.none,
-                  ),
-                  cursorHeight: 20.0,
+                decoration: InputDecoration(
+                  hintText: "Title",
+                  hintStyle: TextStyle(color: Colors.red[300]),
+                  border: InputBorder.none,
                 ),
+                cursorHeight: 30.0,
               ),
-            ],
-          )),
-        ]),
-      ),
+            ),
+            SizedBox(
+              height: 2.0,
+            ),
+            Divider(
+              thickness: 0.3,
+              color: Colors.red[200],
+            ),
+            SizedBox(
+              height: 2.0,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextFormField(
+                controller: _noteController..text = note,
+                textInputAction: TextInputAction.newline,
+                autofocus: true,
+                style: TextStyle(
+                  fontSize: 20.0,
+                ),
+                scrollPadding: EdgeInsets.all(20.0),
+                keyboardType: TextInputType.multiline,
+                maxLines: 99999,
+                decoration: InputDecoration(
+                  hintText: "Note",
+                  hintStyle: TextStyle(color: Colors.red[300]),
+                  border: InputBorder.none,
+                ),
+                cursorHeight: 20.0,
+              ),
+            ),
+          ],
+        )),
+      ]),
     );
   }
 }

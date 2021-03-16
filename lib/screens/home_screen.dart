@@ -5,12 +5,7 @@ import 'package:note_app/model/noteData.dart';
 
 import 'detail_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   final _noteFireStore =
       FirebaseFirestore.instance.collection("notesCollection").snapshots();
 

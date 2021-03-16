@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:note_app/bloc/bloc_task.dart';
 import 'package:note_app/consatants.dart';
 import 'package:note_app/screens/add_note_screen.dart';
 
 import 'bottom_app_bar_screen.dart';
 
-class DetailScreen extends StatefulWidget {
+class DetailScreen extends StatelessWidget {
   final String title;
   final String note;
   final String id;
 
-  DetailScreen({@required this.title, @required this.note, @required this.id});
-
-  @override
-  _DetailScreenState createState() => _DetailScreenState();
-}
-
-class _DetailScreenState extends State<DetailScreen> {
-  bool loading = false;
+  DetailScreen({this.title, this.note, this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -45,31 +37,26 @@ class _DetailScreenState extends State<DetailScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => AddNewTaskScreen(
-                            title: widget.title,
-                            note: widget.note,
-                            id: widget.id)));
+                            title: title, note: note, id: id)));
               })
         ],
         title: Hero(
-          tag: "hero_tag${widget.id}",
+          tag: "hero_tag${id}",
           child: Text(
-            widget.title,
+            title,
             style: TextStyle(
                 color: Colors.red, fontSize: 25.0, fontWeight: FontWeight.w600),
           ),
         ),
       ),
-      body: ModalProgressHUD(
-        inAsyncCall: loading,
-        child: SafeArea(
-          child: Scrollbar(
-            child: Padding(
-              padding: EdgeInsets.only(right: 10.0, left: 10.0),
-              child: SingleChildScrollView(
-                child: SelectableText(
-                  widget.note,
-                  style: TextStyle(fontSize: 18.0),
-                ),
+      body: SafeArea(
+        child: Scrollbar(
+          child: Padding(
+            padding: EdgeInsets.only(right: 10.0, left: 10.0),
+            child: SingleChildScrollView(
+              child: SelectableText(
+                note,
+                style: TextStyle(fontSize: 18.0),
               ),
             ),
           ),
@@ -89,15 +76,8 @@ class _DetailScreenState extends State<DetailScreen> {
                           MaterialStateProperty.all(Colors.yellow[900]),
                     ),
                     onPressed: () async {
-                      setState(() {
-                        loading = true;
-                      });
-
-                      BlocProvider.of<NoteBloc>(context, listen: false).add(
-                          MoveToTrash(
-                              title: widget.title,
-                              note: widget.note,
-                              id: widget.id));
+                      BlocProvider.of<NoteBloc>(context, listen: false)
+                          .add(MoveToTrash(title: title, note: note, id: id));
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Moved to Trash Successfully")));
@@ -128,12 +108,9 @@ class _DetailScreenState extends State<DetailScreen> {
                                     child: Text("Cancel")),
                                 TextButton(
                                     onPressed: () {
-                                      setState(() {
-                                        loading = true;
-                                      });
                                       BlocProvider.of<NoteBloc>(context,
                                               listen: false)
-                                          .add(DeleteNote(id: widget.id));
+                                          .add(DeleteNote(id: id));
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                               content: Text(
