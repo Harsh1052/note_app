@@ -26,7 +26,8 @@ class TrashTaskScreen extends StatelessWidget {
               noteTrash.add(NoteData(
                   note: note.data()["note"],
                   title: note.data()["title"],
-                  noteId: note.data()["noteId"]));
+                  noteId: note.data()["noteId"],
+                  videoLink: note.data()["video_link"]));
             }
 
             if (noteTrash.length == 0) {
@@ -77,6 +78,7 @@ class TrashTaskScreen extends StatelessWidget {
                                     .add(Restore(
                                         title: noteTrash[index].title,
                                         note: noteTrash[index].note,
+                                        videoLink: noteTrash[index].videoLink,
                                         id: noteTrash[index].noteId));
 
                                 ScaffoldMessenger.of(context).showSnackBar(

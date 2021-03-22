@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/bloc/bloc_task.dart';
 import 'package:note_app/consatants.dart';
 import 'package:note_app/screens/add_note_screen.dart';
+import 'package:note_app/screens/video_screen.dart';
 
 import 'bottom_app_bar_screen.dart';
 
@@ -10,8 +11,9 @@ class DetailScreen extends StatelessWidget {
   final String title;
   final String note;
   final String id;
+  final String videoLink;
 
-  DetailScreen({this.title, this.note, this.id});
+  DetailScreen({this.title, this.note, this.id, this.videoLink});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,11 @@ class DetailScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => AddNewTaskScreen(
-                            title: title, note: note, id: id)));
+                              title: title,
+                              note: note,
+                              id: id,
+                              videoLink: videoLink,
+                            )));
               })
         ],
         title: Hero(
@@ -54,10 +60,47 @@ class DetailScreen extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(right: 10.0, left: 10.0),
             child: SingleChildScrollView(
-              child: SelectableText(
-                note,
-                style: TextStyle(fontSize: 18.0),
-              ),
+              child: videoLink == "no_video_link"
+                  ? Column(
+                      children: [
+                        SelectableText(
+                          note,
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          SelectableText(
+                            note,
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(15.0)),
+                            child: InkWell(
+                              child: Text(
+                                videoLink,
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => VideoScreen(
+                                              title: title,
+                                              videoLink: videoLink,
+                                            )));
+                              },
+                            ),
+                          )
+                        ]),
             ),
           ),
         ),
@@ -76,8 +119,12 @@ class DetailScreen extends StatelessWidget {
                           MaterialStateProperty.all(Colors.yellow[900]),
                     ),
                     onPressed: () async {
-                      BlocProvider.of<NoteBloc>(context, listen: false)
-                          .add(MoveToTrash(title: title, note: note, id: id));
+                      BlocProvider.of<NoteBloc>(context, listen: false).add(
+                          MoveToTrash(
+                              title: title,
+                              note: note,
+                              id: id,
+                              videoLink: videoLink));
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Moved to Trash Successfully")));

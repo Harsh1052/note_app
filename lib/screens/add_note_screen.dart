@@ -8,12 +8,18 @@ class AddNewTaskScreen extends StatelessWidget {
   final String title;
   final String note;
   final String id;
+  final String videoLink;
 
-  AddNewTaskScreen({this.note = "", this.title = "", this.id = ""});
+  AddNewTaskScreen(
+      {this.note = "", this.title = "", this.id = "", this.videoLink});
 
   final _titleController = TextEditingController();
 
   final _noteController = TextEditingController();
+
+  final _videoLinkController = TextEditingController();
+
+  final ValueNotifier<bool> isVideoLink = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,9 @@ class AddNewTaskScreen extends StatelessWidget {
                       BlocProvider.of<NoteBloc>(context, listen: false).add(
                           AddNote(
                               title: _titleController.text,
-                              note: _noteController.text));
+                              note: _noteController.text,
+                              videoLink: _videoLinkController.text == ""?
+                                  "no_video_link":_videoLinkController.text));
 
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Added Successfully")));
@@ -95,6 +103,73 @@ class AddNewTaskScreen extends StatelessWidget {
                 ),
                 cursorHeight: 30.0,
               ),
+            ),
+            SizedBox(
+              height: 2.0,
+            ),
+            Divider(
+              thickness: 0.3,
+              color: Colors.red[200],
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: ValueListenableBuilder(
+                builder: (BuildContext context, value, Widget child) {
+                  return Row(
+                    children: [
+                      Text(
+                        "I have a Video Link",
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Checkbox(
+                        onChanged: (newValue) {
+                          isVideoLink.value = newValue;
+                        },
+                        value: value,
+                      ),
+                    ],
+                  );
+                },
+                valueListenable: isVideoLink,
+              ),
+            ),
+            ValueListenableBuilder(
+              builder: (BuildContext context, value, Widget child) {
+                return Visibility(
+                  visible: isVideoLink.value,
+                  child: Column(
+                    children: [
+                      Divider(
+                        thickness: 0.3,
+                        color: Colors.red[200],
+                      ),
+                      SizedBox(
+                        height: 2.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                          controller: _videoLinkController..text = videoLink,
+                          textInputAction: TextInputAction.newline,
+                          autofocus: true,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Add Video Link",
+                            hintStyle: TextStyle(color: Colors.blue),
+                          ),
+                          cursorHeight: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              valueListenable: isVideoLink,
             ),
             SizedBox(
               height: 2.0,

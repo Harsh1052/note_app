@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<NoteBloc>(
-      create: (context) => NoteBloc(FirebaseCRUD()),
+      create: (context) => NoteBloc(firebaseCRUD: FirebaseCRUD()),
       lazy: false,
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
