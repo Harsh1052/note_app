@@ -80,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           id: localNoteList[index].noteId,
                                           videoLink:
                                               localNoteList[index].videoLink,
+                                          online: false,
                                         )));
                           },
                           child: Container(
@@ -170,6 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             id: noteList[index].noteId,
                                             videoLink:
                                                 noteList[index].videoLink,
+                                            online: true,
                                           )));
                             },
                             child: Container(
@@ -205,9 +207,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await noteDatabase.deleteDatabase();
 
       isConnected = true;
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("No Internet Connection")));
     }
   }
 }

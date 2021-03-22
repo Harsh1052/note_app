@@ -56,8 +56,9 @@ class AddNewTaskScreen extends StatelessWidget {
                           AddNote(
                               title: _titleController.text,
                               note: _noteController.text,
-                              videoLink: _videoLinkController.text == ""?
-                                  "no_video_link":_videoLinkController.text));
+                              videoLink: _videoLinkController.text == ""
+                                  ? "no_video_link"
+                                  : _videoLinkController.text));
 
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Added Successfully")));

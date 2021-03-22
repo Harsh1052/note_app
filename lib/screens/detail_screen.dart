@@ -12,8 +12,9 @@ class DetailScreen extends StatelessWidget {
   final String note;
   final String id;
   final String videoLink;
+  final bool online;
 
-  DetailScreen({this.title, this.note, this.id, this.videoLink});
+  DetailScreen({this.title, this.note, this.id, this.videoLink, this.online});
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +91,18 @@ class DetailScreen extends StatelessWidget {
                                 style: TextStyle(color: Colors.blue),
                               ),
                               onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => VideoScreen(
-                                              title: title,
-                                              videoLink: videoLink,
-                                            )));
+                                online
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => VideoScreen(
+                                                  title: title,
+                                                  videoLink: videoLink,
+                                                )))
+                                    : ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "No Internet Connection")));
                               },
                             ),
                           )
@@ -126,8 +132,11 @@ class DetailScreen extends StatelessWidget {
                               id: id,
                               videoLink: videoLink));
 
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Moved to Trash Successfully")));
+                      online
+                          ? ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Moved Successfully")))
+                          : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("No Internet Connection")));
 
                       Navigator.pushReplacement(
                           context,
@@ -158,11 +167,16 @@ class DetailScreen extends StatelessWidget {
                                       BlocProvider.of<NoteBloc>(context,
                                               listen: false)
                                           .add(DeleteNote(id: id));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "Deleted Successfully")));
 
+                                      online
+                                          ? ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      "Deleted Successfully")))
+                                          : ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      "No Internet Connection")));
                                       Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
